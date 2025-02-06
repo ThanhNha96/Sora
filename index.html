@@ -98,7 +98,7 @@
             width: 30px;
             height: 30px;
             background: rgba(255, 0, 0, 0.8);
-            clip-path: polygon(50% 0%, 0% 35%, 50% 100%, 100% 35%); /* Tạo hình trái tim */
+            clip-path: polygon(50% 0%, 0% 35%, 50% 100%, 100% 35%);
             animation: bubbleFall 6s ease-in-out infinite;
             opacity: 0.8;
         }
@@ -161,26 +161,71 @@
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
+
+        .message-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            display: none; /* Hidden by default */
+        }
+        .message-button:hover {
+            background-color: #ff4500;
+        }
+		.footer {
+            position: absolute;
+            bottom: 1px;
+            font-size: 10px;
+            color: #ff6347;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <p class="instruction">Nhấn vào đèn cầy để thổi nến!</p>
+    <p class="instruction" id="instruction1">Nhấn vào đèn cầy để thổi nến</p>
+    <p class="instruction" id="instruction2">Sau khi em ước xong nha!</p>
+    <p class="instruction" id="instruction1"></p>
+    <p class="instruction" id="instruction2"></p>
     <div class="cake">
         <div class="candle" id="candle">
             <div class="flame"></div>
         </div>
         <div class="layer"></div>
-        <div class="text-center">Chúc Mừng Sinh Nhật Sora</div>
+        <div class="text-center">Chúc Mừng Sinh Nhật Hồng</div>
     </div>
-    <h1>Chúc em sinh nhật vui vẻ! Chúc em một đời an nhiên, không âu lo, không muộn phiền.</h1>
-    <h1>Mong rằng cuộc sống của em luôn ngập tràn niềm vui, hạnh phúc và bình yên.</h1>
+
+    <h1 id="message1" style="display: none;"></h1>
+    <h1 id="message2" style="display: none;"></h1>
+
+    <button id="messageButton" class="message-button">Xem lời chúc</button>
 
     <audio id="birthday-audio" loop>
         <source src="happy-birthday.mp3" type="audio/mp3">
         Trình duyệt của bạn không hỗ trợ thẻ audio.
     </audio>
-
+    <div class="footer">
+        Người tạo trang web: Thanh Nhã
+    </div>
     <script>
+        // Mảng các câu chúc
+        const messages = [
+            "Chúc em sinh nhật vui vẻ! Chúc em một đời an nhiên, không âu lo, không muộn phiền.",
+            "Mong rằng cuộc sống của em luôn ngập tràn niềm vui, hạnh phúc và bình yên.",
+            "Chúc em luôn gặp nhiều may mắn, thành công và tình yêu trọn vẹn.",
+            "Chúc em tuổi mới thêm nhiều sức khỏe, hạnh phúc và những điều tốt đẹp nhất.",
+            "Chúc em luôn nở nụ cười rạng rỡ, vượt qua mọi khó khăn và đạt được ước mơ."
+        ];
+
+        // Hàm random câu chúc
+        function getRandomMessage() {
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            return messages[randomIndex];
+        }
+
         function createConfetti() {
             for (let i = 0; i < 50; i++) {
                 let confetti = document.createElement("div");
@@ -197,10 +242,10 @@
             for (let i = 0; i < 30; i++) {
                 let bubble = document.createElement("div");
                 bubble.classList.add("bubble");
-                bubble.style.left = `${Math.random() * 100}vw`;  // Vị trí ngẫu nhiên từ trái sang phải
-                bubble.style.animationDuration = `${Math.random() * 3 + 6}s`;  // Thời gian bong bóng tồn tại lâu hơn
+                bubble.style.left = `${Math.random() * 100}vw`; 
+                bubble.style.animationDuration = `${Math.random() * 3 + 6}s`; 
                 document.body.appendChild(bubble);
-                setTimeout(() => bubble.remove(), 600000);  // Thời gian bong bóng biến mất lâu hơn
+                setTimeout(() => bubble.remove(), 600000); 
             }
         }
 
@@ -211,8 +256,22 @@
 
         function toggleCandle() {
             let flame = document.querySelector(".flame");
-            flame.style.opacity = flame.style.opacity === '0' ? '1' : '0';  // Tắt hoặc bật ngọn lửa
-            flame.style.animation = flame.style.opacity === '0' ? 'none' : 'flicker 1s infinite alternate';  // Tắt hoặc bật hiệu ứng nhấp nháy
+            flame.style.opacity = flame.style.opacity === '0' ? '1' : '0';
+            flame.style.animation = flame.style.opacity === '0' ? 'none' : 'flicker 1s infinite alternate'; 
+
+            // Ẩn câu hướng dẫn sau khi thổi nến
+            document.getElementById("instruction1").style.display = "none";
+            document.getElementById("instruction2").style.display = "none";
+
+            // Hiển thị nút "Xem lời chúc"
+            document.getElementById("messageButton").style.display = "block";
+        }
+
+        function showRandomMessage() {
+            const randomMessage = getRandomMessage();
+            document.getElementById("message1").innerText = randomMessage;
+            document.getElementById("message1").style.display = "block";
+            document.getElementById("message2").style.display = "block";
         }
 
         createConfetti();
@@ -224,6 +283,10 @@
 
         let candle = document.getElementById("candle");
         candle.addEventListener("click", toggleCandle);
+
+        let button = document.getElementById("messageButton");
+        button.addEventListener("click", showRandomMessage);
     </script>
 </body>
+
 </html>
