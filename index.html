@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Sinh Nhật Hồng</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #ffe6e6;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            text-align: center;
+        }
+        .cake {
+            width: 200px;
+            height: 150px;
+            background: #ffb6c1;
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            box-shadow: 0 0 15px rgba(255, 182, 193, 0.6);
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+        .layer {
+            width: 100%;
+            height: 40px;
+            background: #ff99aa;
+            position: absolute;
+            bottom: 0;
+            border-radius: 10px;
+        }
+        .candle {
+            width: 10px;
+            height: 50px;
+            background: #ff5733;
+            position: absolute;
+            left: 50%;
+            top: -50px;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
+        .flame {
+            width: 15px;
+            height: 25px;
+            background: orange;
+            border-radius: 50%;
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flicker 1s infinite alternate;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.6; transform: scale(1.2); }
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 15px rgba(255, 182, 193, 0.6); }
+            100% { box-shadow: 0 0 25px rgba(255, 182, 193, 1); }
+        }
+        h1 {
+            font-size: 24px;
+            margin-top: 20px;
+            opacity: 0;
+            animation: fadeIn 2s ease-in forwards, colorChange 15s infinite alternate;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes colorChange {
+            0% { color: #ff4081; }
+            25% { color: #ff6347; }
+            50% { color: #ffcc00; }
+            75% { color: #32cd32; }
+            100% { color: #1e90ff; }
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: red;
+            opacity: 0.7;
+            border-radius: 50%;
+            animation: fall 3s linear infinite;
+        }
+        @keyframes fall {
+            from { transform: translateY(-100vh) translateX(0); }
+            to { transform: translateY(100vh) translateX(30px); }
+        }
+
+        .bubble {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 0, 0, 0.8);
+            clip-path: polygon(50% 0%, 0% 35%, 50% 100%, 100% 35%); /* Tạo hình trái tim */
+            animation: bubbleFall 6s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes bubbleFall {
+            0% { 
+                transform: translateY(-100vh) scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: translateY(50vh) scale(0.7); 
+                opacity: 0.8;
+            }
+            100% { 
+                transform: translateY(100vh) scale(1.2); 
+                opacity: 0.5;
+            }
+        }
+
+        .text-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            animation: glowText 2s ease-in-out infinite alternate, scaleText 1.5s ease-in-out infinite alternate, textColorChange 10s infinite alternate;
+        }
+
+        @keyframes glowText {
+            0% { text-shadow: 0 0 5px rgba(255, 182, 193, 0.6); }
+            100% { text-shadow: 0 0 20px rgba(255, 182, 193, 1); }
+        }
+
+        @keyframes scaleText {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes textColorChange {
+            0% { color: #ff4081; }
+            25% { color: #ff6347; }
+            50% { color: #ffcc00; }
+            75% { color: #32cd32; }
+            100% { color: #1e90ff; }
+        }
+
+        .instruction {
+            font-size: 20px;
+            margin-top: 10px;
+            color: #ff6347;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <p class="instruction">Nhấn vào đèn cầy để thổi nến!</p>
+    <div class="cake">
+        <div class="candle" id="candle">
+            <div class="flame"></div>
+        </div>
+        <div class="layer"></div>
+        <div class="text-center">Sinh Nhật Hồng</div>
+    </div>
+    <h1>Chúc em sinh nhật vui vẻ! Chúc em một đời an nhiên, không âu lo, không muộn phiền.</h1>
+    <h1>Mong rằng cuộc sống của em luôn ngập tràn niềm vui, hạnh phúc và bình yên.</h1>
+
+    <audio id="birthday-audio" loop>
+        <source src="happy-birthday.mp3" type="audio/mp3">
+        Trình duyệt của bạn không hỗ trợ thẻ audio.
+    </audio>
+
+    <script>
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                let confetti = document.createElement("div");
+                confetti.classList.add("confetti");
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 500000);
+            }
+        }
+
+        function createBubbles() {
+            for (let i = 0; i < 30; i++) {
+                let bubble = document.createElement("div");
+                bubble.classList.add("bubble");
+                bubble.style.left = `${Math.random() * 100}vw`;  // Vị trí ngẫu nhiên từ trái sang phải
+                bubble.style.animationDuration = `${Math.random() * 3 + 6}s`;  // Thời gian bong bóng tồn tại lâu hơn
+                document.body.appendChild(bubble);
+                setTimeout(() => bubble.remove(), 600000);  // Thời gian bong bóng biến mất lâu hơn
+            }
+        }
+
+        function playAudio() {
+            var audio = document.getElementById("birthday-audio");
+            audio.play();
+        }
+
+        function toggleCandle() {
+            let flame = document.querySelector(".flame");
+            flame.style.opacity = flame.style.opacity === '0' ? '1' : '0';  // Tắt hoặc bật ngọn lửa
+            flame.style.animation = flame.style.opacity === '0' ? 'none' : 'flicker 1s infinite alternate';  // Tắt hoặc bật hiệu ứng nhấp nháy
+        }
+
+        createConfetti();
+        createBubbles();
+
+        document.body.addEventListener("click", function() {
+            playAudio();
+        });
+
+        let candle = document.getElementById("candle");
+        candle.addEventListener("click", toggleCandle);
+    </script>
+</body>
+</html>
