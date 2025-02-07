@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body { text-align: center; background: #ffe6e6; }
+        canvas { background: black; }
+        #restartButton { display: none; margin-top: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        #score { font-size: 20px; margin-bottom: 10px; }
+        .container { display: flex; flex-direction: column; align-items: center; }
+    </style>
+</head>
+<body>
+    <h1>Snake Game</h1>
+    <div class="container">
+        <div id="score">Score: 0</div>
+        <button id="restartButton" onclick="restartGame()">Play Again</button>
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+    </div>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const restartButton = document.getElementById("restartButton");
+        const scoreDisplay = document.getElementById("score");
+
+        const box = 20;
+        let snake, food, direction, gameOver, gameInterval, score;
+
+        function initGame() {
+            snake = [{ x: 10 * box, y: 10 * box }];
+            food = { x: Math.floor(Math.random() * 30) * box, y: Math.floor(Math.random() * 20) * box };
+            direction = "RIGHT";
+            gameOver = false;
+            score = 0;
+            scoreDisplay.textContent = "Score: " + score;
+            restartButton.style.display = "none";
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(draw, 150);
+        }
+        
+        document.addEventListener("keydown", changeDirection);
+        function changeDirection(event) {
+            if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+            else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+            else if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+            else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+        }
+
+        function draw() {
+            if (gameOver) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "red";
+            ctx.beginPath();
+            ctx.arc(food.x + box / 2, food.y + box / 2, box / 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = "lime";
+            snake.forEach(segment => {
+                ctx.beginPath();
+                ctx.arc(segment.x + box / 2, segment.y + box / 2, box / 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            let head = { ...snake[0] };
+            if (direction === "UP") head.y -= box;
+            if (direction === "DOWN") head.y += box;
+            if (direction === "LEFT") head.x -= box;
+            if (direction === "RIGHT") head.x += box;
+            
+            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                gameOver = true;
+                restartButton.style.display = "block";
+                return;
+            }
+            
+            snake.unshift(head);
+            if (head.x === food.x && head.y === food.y) {
+                food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 10) * box };
+                score++;
+                scoreDisplay.textContent = "Score: " + score;
+                if (score >= 10) {
+                    setTimeout(() => {
+                        alert("Chúc mừng! Bạn đã chiến thắng!");
+                        window.location.href = "https://thanhnha96.github.io/Sora";
+                    }, 500);
+                }
+            } else {
+                snake.pop();
+            }
+        }
+
+        function restartGame() {
+            initGame();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

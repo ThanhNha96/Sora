@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minigame Ghép Hình</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        .puzzle-container { display: grid; gap: 2px; margin: 20px auto; display: none; }
+        .piece { cursor: grab; border: 1px solid #000; display: flex; align-items: center; justify-content: center; }
+        .preview { margin: 20px auto; position: relative; }
+        .preview img { width: 400px; height: auto; border: 2px solid #000; filter: blur(5px); }
+        .start-button { padding: 10px 20px; font-size: 16px; cursor: pointer; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.7); color: white; border: none; font-weight: bold; }
+        .message { display: none; font-size: 20px; color: green; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Minigame Ghép Hình</h2>
+    <label for="difficulty">Chọn độ khó:</label>
+    <select id="difficulty">
+        <option value="6">Dễ (6 ô)</option>
+        <option value="12" selected>Trung bình (12 ô)</option>
+        <option value="24">Khó (24 ô)</option>
+    </select>
+    <button onclick="changeDifficulty()">Chọn lại cấp độ</button>
+    <div class="preview" id="preview">
+        <p>Hình cần ghép:</p>
+        <img id="preview-image" src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1568590/capsule_616x353.jpg?t=1734556407" alt="Preview">
+        <button class="start-button" onclick="startGame()">Bắt đầu trò chơi</button>
+    </div>
+    <div class="puzzle-container" id="puzzle"></div>
+    <p class="message" id="message">Chúc mừng! Bạn đã hoàn thành!</p>
+    <script>
+        let images = [
+            "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1568590/capsule_616x353.jpg?t=1734556407",
+            "https://didongviet.vn/dchannel/wp-content/uploads/2022/11/goose-goose-duck-didongviet-cover.jpg",
+            "https://i.ytimg.com/vi/XRlC0iXozBY/maxresdefault.jpg",
+            "https://static1.thegamerimages.com/wordpress/wp-content/uploads/2023/02/goose-goose-duck-the-goose-goose-duck-universe.jpg",
+            "https://i.ytimg.com/vi/PFLrHyqSaGE/maxresdefault.jpg"
+        ];
+        let currentImageIndex = 0;
+        let difficulty = 12;
+
+        function changeDifficulty() {
+            difficulty = parseInt(document.getElementById("difficulty").value);
+            setupPuzzle(images[currentImageIndex]);
+        }
+
+        function setupPuzzle(imageSrc) {
+            document.getElementById("puzzle").innerHTML = "";
+            let columns = difficulty === 6 ? 3 : difficulty === 12 ? 4 : 6;
+            let rows = Math.ceil(difficulty / columns);
+            document.getElementById("puzzle").style.gridTemplateColumns = `repeat(${columns}, 100px)`;
+            document.getElementById("puzzle").style.gridTemplateRows = `repeat(${rows}, 100px)`;
+            document.getElementById("puzzle").style.width = `${columns * 100 + (columns - 1) * 2}px`;
+            
+            let pieces = [];
+            for (let i = 0; i < difficulty; i++) {
+                let piece = document.createElement("div");
+                piece.classList.add("piece");
+                piece.style.width = "100px";
+                piece.style.height = "100px";
+                piece.style.backgroundSize = `${columns * 100}px ${rows * 100}px`;
+                piece.style.backgroundImage = `url(${imageSrc})`;
+                piece.style.backgroundPosition = `${-(i % columns) * 100}px ${-Math.floor(i / columns) * 100}px`;
+                piece.setAttribute("draggable", "true");
+                piece.dataset.index = i;
+                pieces.push(piece);
+            }
+            pieces.sort(() => Math.random() - 0.5);
+            pieces.forEach(piece => document.getElementById("puzzle").appendChild(piece));
+            addDragAndDrop();
+        }
+
+        function addDragAndDrop() {
+            let puzzleContainer = document.getElementById("puzzle");
+            let dragged = null;
+            puzzleContainer.addEventListener("dragstart", (e) => { dragged = e.target; });
+            puzzleContainer.addEventListener("dragover", (e) => { e.preventDefault(); });
+            puzzleContainer.addEventListener("drop", (e) => {
+                if (e.target.classList.contains("piece") && dragged !== e.target) {
+                    let temp = dragged.cloneNode(true);
+                    let targetClone = e.target.cloneNode(true);
+                    puzzleContainer.replaceChild(temp, e.target);
+                    puzzleContainer.replaceChild(targetClone, dragged);
+                    addDragAndDrop();
+                    checkWin();
+                }
+            });
+        }
+
+        function startGame() {
+            document.getElementById("preview").style.display = "none";
+            document.getElementById("message").style.display = "none";
+            document.querySelector(".puzzle-container").style.display = "grid";
+            setupPuzzle(images[currentImageIndex]);
+        }
+
+        function checkWin() {
+            let pieces = document.querySelectorAll(".piece");
+            let correct = [...pieces].every((piece, index) => piece.dataset.index == index);
+            if (correct) {
+                document.getElementById("message").style.display = "block";
+                setTimeout(nextLevel, 2000);
+            }
+        }
+
+        function nextLevel() {
+            currentImageIndex++;
+            if (currentImageIndex >= images.length) {
+                window.location.href = "file:///C:/Users/NPC/Desktop/happy_birthday_cake_python%20(1)/minigame.html";
+                return;
+            }
+            document.getElementById("preview").style.display = "block";
+            document.getElementById("preview-image").src = images[currentImageIndex];
+            document.querySelector(".puzzle-container").style.display = "none";
+        }
+    </script>
+</body>
+</html>
