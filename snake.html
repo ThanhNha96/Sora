@@ -18,6 +18,7 @@
     <h1>Snake Game</h1>
     <div class="container">
         <div id="score">Điểm: 0</div>
+		<button class="music-button" onclick="toggleMusic()">Tắt nhạc</button>
         <button id="restartButton" onclick="restartGame()">Chơi lại</button>
         <canvas id="gameCanvas"></canvas>
         <div class="controls">
@@ -27,9 +28,14 @@
                 <button class="btn" onclick="changeDirection('DOWN')">⬇️</button>
             </div>
             <button class="btn" onclick="changeDirection('RIGHT')">➡️</button>
-        </div>
+		<audio id="background-music" loop>
+        <source src="music3.mp3" type="audio/mpeg">	        
+		</div>
     </div>
     <script>
+        let music = document.getElementById("background-music");
+        let isMusicPlaying = false;
+		
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const restartButton = document.getElementById("restartButton");
@@ -140,7 +146,34 @@
                 });
             }
         }
+		function toggleMusic() {
+			if (!music) return; // Kiểm tra nếu thẻ <audio> có tồn tại
 
+			if (isMusicPlaying) {
+				music.pause();
+				document.querySelector(".music-button").textContent = "Bật nhạc";
+			} else {
+				let playPromise = music.play();
+				if (playPromise !== undefined) {
+					playPromise.then(() => {
+						isMusicPlaying = true;
+						document.querySelector(".music-button").textContent = "Tắt nhạc";
+					}).catch((error) => {
+						console.warn("Trình duyệt chặn phát nhạc:", error);
+					});
+				}
+			}
+			isMusicPlaying = !isMusicPlaying;
+		}
+		
+		document.addEventListener("click", function enableAudio() {
+			music.play().then(() => {
+				document.removeEventListener("click", enableAudio); // Chỉ cần bật một lần
+			}).catch((error) => {
+				console.warn("Không thể tự động phát nhạc:", error);
+			});
+		});
+		
         checkDevice();
         window.addEventListener("resize", checkDevice);
         initGame();
