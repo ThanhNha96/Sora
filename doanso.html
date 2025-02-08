@@ -33,13 +33,19 @@
     <h1>Chọn Số Đúng</h1>
     <div id="game-container">
         <h2 id="level-title">Màn 1 - Cấp độ Dễ</h2>
+	    <button class="music-button" onclick="toggleMusic()">Tắt nhạc</button>
         <p id="range-text">Hãy đoán một số từ 1 đến 100:</p>
         <input type="number" id="guess" min="1" max="100">
         <button onclick="checkGuess()">Đoán</button>
         <p id="message"></p>
+		<audio id="background-music" loop>
+        <source src="music2.mp3" type="audio/mpeg">
     </div>
 
     <script>
+	    let music = document.getElementById("background-music");
+        let isMusicPlaying = false
+		
         let levels = [
             { name: "Cấp độ Dễ", max: 100 },
             { name: "Cấp độ Trung bình", max: 1000 },
@@ -96,6 +102,46 @@
                 }, 3000); // Chuyển trang sau 3 giây
             }
         }
+		
+		function toggleMusic() {
+			if (isMusicPlaying) {
+				music.pause();
+				document.querySelector(".music-button").textContent = "Bật nhạc";
+			} else {
+				music.play();
+				document.querySelector(".music-button").textContent = "Tắt nhạc";
+			}
+			isMusicPlaying = !isMusicPlaying;
+		}
+
+		function toggleMusic() {
+			if (!music) return; // Kiểm tra nếu thẻ <audio> có tồn tại
+
+			if (isMusicPlaying) {
+				music.pause();
+				document.querySelector(".music-button").textContent = "Bật nhạc";
+			} else {
+				let playPromise = music.play();
+				if (playPromise !== undefined) {
+					playPromise.then(() => {
+						isMusicPlaying = true;
+						document.querySelector(".music-button").textContent = "Tắt nhạc";
+					}).catch((error) => {
+						console.warn("Trình duyệt chặn phát nhạc:", error);
+					});
+				}
+			}
+			isMusicPlaying = !isMusicPlaying;
+		}
+		
+		document.addEventListener("click", function enableAudio() {
+			music.play().then(() => {
+				document.removeEventListener("click", enableAudio); // Chỉ cần bật một lần
+			}).catch((error) => {
+				console.warn("Không thể tự động phát nhạc:", error);
+			});
+		});
+
     </script>
 
 
