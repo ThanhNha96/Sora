@@ -40,7 +40,8 @@
         canvas.height = window.innerHeight * 0.6;
 
         const box = 20;
-        let snake, food, direction, gameOver, gameInterval, score;
+        let snake, food, direction, gameOver, gameInterval, score, speed;
+        let isMobile = window.matchMedia("(pointer: coarse)").matches;
 
         function initGame() {
             snake = [{ x: 10 * box, y: 10 * box }];
@@ -48,10 +49,11 @@
             direction = "RIGHT";
             gameOver = false;
             score = 0;
+            speed = isMobile ? 200 : 150; // Giảm tốc độ trên điện thoại
             scoreDisplay.textContent = "Score: " + score;
             restartButton.style.display = "none";
             if (gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(draw, 150);
+            gameInterval = setInterval(draw, speed);
         }
         
         function changeDirection(newDirection) {
@@ -83,10 +85,18 @@
             if (direction === "LEFT") head.x -= box;
             if (direction === "RIGHT") head.x += box;
             
-            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-                gameOver = true;
-                restartButton.style.display = "block";
-                return;
+            // Đi xuyên tường trên điện thoại
+            if (isMobile) {
+                if (head.x < 0) head.x = canvas.width - box;
+                else if (head.x >= canvas.width) head.x = 0;
+                if (head.y < 0) head.y = canvas.height - box;
+                else if (head.y >= canvas.height) head.y = 0;
+            } else {
+                if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                    gameOver = true;
+                    restartButton.style.display = "block";
+                    return;
+                }
             }
             
             snake.unshift(head);
@@ -95,10 +105,8 @@
                 score++;
                 scoreDisplay.textContent = "Score: " + score;
                 if (score === 10) {
-                    setTimeout(() => {
-                        alert("Chúc mừng bạn đã hoàn thành các trò chơi! Đang chuyển sang tới phần đặc biệt........");
-                        window.location.href = "https://ThanhNha96.github.io/Sora/sora.html";
-                    }, 500);
+                    alert("Chúc mừng! Sora đã hoàn thành tất cả trò chơi! Đang chuyển sang phần đặc biệt...");
+                    window.location.href = "https://ThanhNha96.github.io/Sora/sora.html";
                 }
             } else {
                 snake.pop();
@@ -110,7 +118,7 @@
         }
 
         function checkDevice() {
-            if (window.matchMedia("(pointer: coarse)").matches) {
+            if (isMobile) {
                 controls.style.display = "flex";
             } else {
                 controls.style.display = "none";
