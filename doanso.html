@@ -1,123 +1,102 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
+<html lang="vi"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minigame Ghép Hình</title>
+    <title>Chọn Số Đúng</title>
     <style>
-        body { text-align: center; background: #ffe6e6; font-family: Arial, sans-serif; }
-        .puzzle-container { display: grid; gap: 2px; margin: 20px auto; display: none; }
-        .piece { cursor: grab; border: 1px solid #000; display: flex; align-items: center; justify-content: center; }
-        .preview { margin: 20px auto; position: relative; }
-        .preview img { width: 400px; height: auto; border: 2px solid #000; filter: blur(5px); }
-        .start-button { padding: 10px 20px; font-size: 16px; cursor: pointer; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.7); color: white; border: none; font-weight: bold; }
-        .message { display: none; font-size: 20px; color: #ff9696; margin-top: 20px; }
+        body { text-align: center; background: #ffe6e6; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #game-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #message {
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <h2>Minigame Ghép Hình</h2>
-    <label for="difficulty">Chọn độ khó:</label>
-    <select id="difficulty">
-        <option value="6">Dễ </option>
-        <option value="12" selected>Trung bình</option>
-        <option value="24">Khó</option>
-    </select>
-    <button onclick="changeDifficulty()">Chọn lại cấp độ</button>
-    <div class="preview" id="preview">
-        <p>Hình cần ghép:</p>
-        <img id="preview-image" src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1568590/capsule_616x353.jpg?t=1734556407" alt="Preview">
-        <button class="start-button" onclick="startGame()">Bắt đầu trò chơi</button>
+    <h1>Chọn Số Đúng</h1>
+    <div id="game-container">
+        <h2 id="level-title">Màn 1 - Cấp độ Dễ</h2>
+        <p id="range-text">Hãy đoán một số từ 1 đến 100:</p>
+        <input type="number" id="guess" min="1" max="100">
+        <button onclick="checkGuess()">Đoán</button>
+        <p id="message"></p>
     </div>
-    <div class="puzzle-container" id="puzzle"></div>
-    <p class="message" id="message"></p>
+
     <script>
-        let images = [
-            "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1568590/capsule_616x353.jpg?t=1734556407",
-            "https://didongviet.vn/dchannel/wp-content/uploads/2022/11/goose-goose-duck-didongviet-cover.jpg",
-            "https://i.ytimg.com/vi/XRlC0iXozBY/maxresdefault.jpg",
-            "https://static1.thegamerimages.com/wordpress/wp-content/uploads/2023/02/goose-goose-duck-the-goose-goose-duck-universe.jpg",
-            "https://i.ytimg.com/vi/PFLrHyqSaGE/maxresdefault.jpg"
+        let levels = [
+            { name: "Cấp độ Dễ", max: 100 },
+            { name: "Cấp độ Trung bình", max: 1000 },
+            { name: "Cấp độ Khó", max: 10000 }
         ];
-        let currentImageIndex = 0;
-        let difficulty = 12;
+        
+        let currentLevel = 0;
+        let maxNumber = levels[currentLevel].max;
+        let randomNumber = Math.floor(Math.random() * maxNumber) + 1;
 
-        function changeDifficulty() {
-            difficulty = parseInt(document.getElementById("difficulty").value);
-            setupPuzzle(images[currentImageIndex]);
-        }
+        function checkGuess() {
+            let guess = parseInt(document.getElementById("guess").value);
+            let message = document.getElementById("message");
 
-        function setupPuzzle(imageSrc) {
-            document.getElementById("puzzle").innerHTML = "";
-            let columns = difficulty === 6 ? 3 : difficulty === 12 ? 4 : 6;
-            let rows = Math.ceil(difficulty / columns);
-            document.getElementById("puzzle").style.gridTemplateColumns = `repeat(${columns}, 100px)`;
-            document.getElementById("puzzle").style.gridTemplateRows = `repeat(${rows}, 100px)`;
-            document.getElementById("puzzle").style.width = `${columns * 100 + (columns - 1) * 2}px`;
-            
-            let pieces = [];
-            for (let i = 0; i < difficulty; i++) {
-                let piece = document.createElement("div");
-                piece.classList.add("piece");
-                piece.style.width = "100px";
-                piece.style.height = "100px";
-                piece.style.backgroundSize = `${columns * 100}px ${rows * 100}px`;
-                piece.style.backgroundImage = `url(${imageSrc})`;
-                piece.style.backgroundPosition = `${-(i % columns) * 100}px ${-Math.floor(i / columns) * 100}px`;
-                piece.setAttribute("draggable", "true");
-                piece.dataset.index = i;
-                pieces.push(piece);
+            if (isNaN(guess) || guess < 1 || guess > maxNumber) {
+                message.innerHTML = `⚠️ Vui lòng nhập một số từ 1 đến ${maxNumber}!`;
+                message.style.color = "orange";
+                return;
             }
-            pieces.sort(() => Math.random() - 0.5);
-            pieces.forEach(piece => document.getElementById("puzzle").appendChild(piece));
-            addDragAndDrop();
-        }
 
-        function addDragAndDrop() {
-            let puzzleContainer = document.getElementById("puzzle");
-            let dragged = null;
-            puzzleContainer.addEventListener("dragstart", (e) => { dragged = e.target; });
-            puzzleContainer.addEventListener("dragover", (e) => { e.preventDefault(); });
-            puzzleContainer.addEventListener("drop", (e) => {
-                if (e.target.classList.contains("piece") && dragged !== e.target) {
-                    let temp = dragged.cloneNode(true);
-                    let targetClone = e.target.cloneNode(true);
-                    puzzleContainer.replaceChild(temp, e.target);
-                    puzzleContainer.replaceChild(targetClone, dragged);
-                    addDragAndDrop();
-                    checkWin();
-                }
-            });
-        }
+            if (guess === randomNumber) {
+                message.innerHTML = "🎉 Chính xác! Chuyển sang màn tiếp theo...";
+                message.style.color = "green";
 
-        function startGame() {
-            document.getElementById("preview").style.display = "none";
-            document.getElementById("message").style.display = "none";
-            document.querySelector(".puzzle-container").style.display = "grid";
-            setupPuzzle(images[currentImageIndex]);
-        }
-
-        function checkWin() {
-            let pieces = document.querySelectorAll(".piece");
-            let correct = [...pieces].every((piece, index) => piece.dataset.index == index);
-            if (correct) {
-                let message = document.getElementById("message");
-                message.style.display = "block";
-                message.innerHTML = `🏆 Sora đã chiến thắng màn ${currentImageIndex + 1} ! Đang chuyển tới màn ${currentImageIndex + 2}...`;
-                setTimeout(nextLevel, 2000);
+                setTimeout(nextLevel, 2000); // Chuyển sang cấp độ mới sau 2 giây
+            } else if (Math.abs(guess - randomNumber) <= 5) {
+                message.innerHTML = "🔥 Gần đúng rồi Sora ơi! Sora sắp đoán trúng rồi!";
+                message.style.color = "blue";
+            } else if (guess < randomNumber) {
+                message.innerHTML = "📉 Số Sora đoán quá thấp!";
+                message.style.color = "red";
+            } else {
+                message.innerHTML = "📈 Số Sora đoán quá cao!";
+                message.style.color = "red";
             }
         }
 
         function nextLevel() {
-            currentImageIndex++;
-            if (currentImageIndex >= images.length) {
-                document.getElementById("message").innerHTML = "🏆 Sora đã vượt qua tất cả thử thách! Đang chuyển đến thử thách cuối cùng...";
-                setTimeout(() => { window.location.href = "https://thanhnha96.github.io/Sora/snake.html"; }, 3000);
-                return;
+            currentLevel++;
+
+            if (currentLevel < levels.length) {
+                maxNumber = levels[currentLevel].max;
+                document.getElementById("level-title").innerHTML = `Màn ${currentLevel + 1} - ${levels[currentLevel].name}`;
+                document.getElementById("range-text").innerHTML = `Hãy đoán một số từ 1 đến ${maxNumber}:`;
+                document.getElementById("guess").max = maxNumber;
+                document.getElementById("message").innerHTML = "";
+                randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+            } else {
+                document.getElementById("message").innerHTML = "🏆 Sora đã chiến thắng vượt qua thử thách 1! Đang chuyển thử thách 2...";
+                document.getElementById("message").style.color = "green";
+
+                setTimeout(() => {
+                    window.location.href = "https://thanhnha96.github.io/Sora/ghephinh";
+                }, 3000); // Chuyển trang sau 3 giây
             }
-            document.getElementById("preview").style.display = "block";
-            document.getElementById("preview-image").src = images[currentImageIndex];
-            document.querySelector(".puzzle-container").style.display = "none";
         }
     </script>
-</body>
-</html>
+
+
+</body></html>
