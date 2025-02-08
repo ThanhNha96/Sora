@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
         #restartButton { display: none; margin-top: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
         #score { font-size: 20px; margin: 10px; }
         .container { display: flex; flex-direction: column; align-items: center; }
-        .controls { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .controls { display: none; justify-content: center; gap: 10px; margin-top: 20px; }
         .btn { padding: 15px; font-size: 20px; cursor: pointer; }
     </style>
 </head>
@@ -34,6 +34,7 @@
         const ctx = canvas.getContext("2d");
         const restartButton = document.getElementById("restartButton");
         const scoreDisplay = document.getElementById("score");
+        const controls = document.querySelector(".controls");
 
         canvas.width = window.innerWidth * 0.9;
         canvas.height = window.innerHeight * 0.6;
@@ -93,10 +94,10 @@
                 food = { x: Math.floor(Math.random() * (canvas.width / box)) * box, y: Math.floor(Math.random() * (canvas.height / box)) * box };
                 score++;
                 scoreDisplay.textContent = "Score: " + score;
-                if (score >= 10) {
+                if (score === 10) {
                     setTimeout(() => {
-                        alert("Chúc mừng! Bạn đã chiến thắng!");
-                        window.location.href = "https://thanhnha96.github.io/Sora";
+                        alert("Chúc mừng bạn đã hoàn thành các trò chơi! Đang chuyển sang tới phần đặc biệt........");
+                        window.location.href = "https://ThanhNha96.github.io/Sora/sora.html";
                     }, 500);
                 }
             } else {
@@ -108,6 +109,22 @@
             initGame();
         }
 
+        function checkDevice() {
+            if (window.matchMedia("(pointer: coarse)").matches) {
+                controls.style.display = "flex";
+            } else {
+                controls.style.display = "none";
+                document.addEventListener("keydown", (event) => {
+                    if (event.key === "ArrowUp") changeDirection("UP");
+                    else if (event.key === "ArrowDown") changeDirection("DOWN");
+                    else if (event.key === "ArrowLeft") changeDirection("LEFT");
+                    else if (event.key === "ArrowRight") changeDirection("RIGHT");
+                });
+            }
+        }
+
+        checkDevice();
+        window.addEventListener("resize", checkDevice);
         initGame();
     </script>
 </body>
