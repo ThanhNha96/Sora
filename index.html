@@ -28,11 +28,23 @@
             font-weight: bold;
             margin-top: 10px;
         }
+        #username-container {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>Chọn Số Đúng</h1>
-    <div id="game-container">
+
+    <!-- Giao diện nhập username -->
+    <div id="username-container">
+        <input type="text" id="username" placeholder="Nhập tên của bạn">
+        <button onclick="startGame()">Bắt đầu</button>
+    </div>
+
+    <!-- Giao diện trò chơi (Ẩn khi chưa nhập username) -->
+    <div id="game-container" style="display: none;">
+        <h2 id="player-name"></h2>
         <h2 id="level-title">Màn 1 - Cấp độ Dễ</h2>
         <p id="range-text">Hãy đoán một số từ 1 đến 100:</p>
         <input type="number" id="guess" min="1" max="100">
@@ -41,6 +53,7 @@
     </div>
 
     <script>
+        let username = "";
         let levels = [
             { name: "Cấp độ Dễ", max: 100 },
             { name: "Cấp độ Trung bình", max: 1000 },
@@ -50,6 +63,19 @@
         let currentLevel = 0;
         let maxNumber = levels[currentLevel].max;
         let randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+
+        function startGame() {
+            username = document.getElementById("username").value.trim();
+            
+            if (username === "") {
+                alert("Vui lòng nhập tên trước khi bắt đầu!");
+                return;
+            }
+
+            document.getElementById("username-container").style.display = "none";
+            document.getElementById("game-container").style.display = "block";
+            document.getElementById("player-name").innerText = `Người chơi: ${username}`;
+        }
 
         function checkGuess() {
             let guess = parseInt(document.getElementById("guess").value);
@@ -62,10 +88,10 @@
             }
 
             if (guess === randomNumber) {
-                message.innerHTML = "🎉 Chính xác! Chuyển sang màn tiếp theo...";
+                message.innerHTML = `🎉 Chính xác, ${username}! Chuyển sang màn tiếp theo...`;
                 message.style.color = "green";
 
-                setTimeout(nextLevel, 2000); // Chuyển sang cấp độ mới sau 2 giây
+                setTimeout(nextLevel, 2000);
             } else if (Math.abs(guess - randomNumber) <= 5) {
                 message.innerHTML = "🔥 Gần đúng! Bạn sắp đoán trúng rồi!";
                 message.style.color = "blue";
@@ -89,12 +115,12 @@
                 document.getElementById("message").innerHTML = "";
                 randomNumber = Math.floor(Math.random() * maxNumber) + 1;
             } else {
-                document.getElementById("message").innerHTML = "🏆 Bạn đã chiến thắng toàn bộ trò chơi! Đang chuyển trang...";
+                document.getElementById("message").innerHTML = `🏆 Xin chúc mừng, ${username}! Bạn đã chiến thắng toàn bộ trò chơi!`;
                 document.getElementById("message").style.color = "green";
 
                 setTimeout(() => {
                     window.location.href = "https://thanhnha96.github.io/Sora/ghephinh";
-                }, 3000); // Chuyển trang sau 3 giây
+                }, 3000);
             }
         }
     </script>
