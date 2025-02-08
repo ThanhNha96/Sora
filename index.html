@@ -15,6 +15,7 @@
             align-items: center;
             flex-direction: column;
             color: #fff;
+            cursor: pointer; /* Thêm hiệu ứng nhắc người dùng có thể nhấp vào */
         }
         .container {
             margin-top: 20vh;
@@ -28,6 +29,7 @@
             cursor: pointer;
             border-radius: 5px;
             transition: 0.3s;
+            margin: 10px;
         }
         button:hover {
             background-color: #e60073;
@@ -45,20 +47,35 @@
 <body>
     <div class="container">
         <h1>Chào mừng đến với trò chơi thử thách ngày sinh nhật!</h1>
-        <p>Hãy sẵn sàng cho một trải nghiệm thú vị!</p>
         <button onclick="startGame()">Bắt đầu ngay</button>
     </div>
+
+    <audio id="background-music" loop>
+        <source src="Welcome.mp3" type="audio/mpeg">
+    </audio>
+
     <canvas id="fireworksCanvas"></canvas>
     
     <script>
+        let music = document.getElementById("background-music");
+        let isMusicStarted = false;
+
+        // Sự kiện click trên toàn bộ trang web để phát nhạc
+        document.addEventListener("click", function () {
+            if (!isMusicStarted) {
+                music.play().catch(error => console.log("Tự động phát bị chặn:", error));
+                isMusicStarted = true;
+            }
+        });
+
         function startGame() {
             showFireworks();
             setTimeout(() => {
                 alert('Chúc mừng! Hãy sẵn sàng với thử thách của bạn!');
                 window.location.href = 'https://thanhnha96.github.io/Sora/doanso.html';
-            }, 3000);
+            }, 5000);
         }
-        
+
         function showFireworks() {
             const canvas = document.getElementById('fireworksCanvas');
             const ctx = canvas.getContext('2d');
