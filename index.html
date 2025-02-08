@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Số Đúng</title>
+    <style>
+        body { text-align: center; background: #ffe6e6; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #game-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #message {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chọn Số Đúng</h1>
+    <div id="game-container">
+        <h2 id="level-title">Màn 1 - Cấp độ Dễ</h2>
+        <p id="range-text">Hãy đoán một số từ 1 đến 100:</p>
+        <input type="number" id="guess" min="1" max="100">
+        <button onclick="checkGuess()">Đoán</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        let levels = [
+            { name: "Cấp độ Dễ", max: 100 },
+            { name: "Cấp độ Trung bình", max: 1000 },
+            { name: "Cấp độ Khó", max: 10000 }
+        ];
+        
+        let currentLevel = 0;
+        let maxNumber = levels[currentLevel].max;
+        let randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+
+        function checkGuess() {
+            let guess = parseInt(document.getElementById("guess").value);
+            let message = document.getElementById("message");
+
+            if (isNaN(guess) || guess < 1 || guess > maxNumber) {
+                message.innerHTML = `⚠️ Vui lòng nhập một số từ 1 đến ${maxNumber}!`;
+                message.style.color = "orange";
+                return;
+            }
+
+            if (guess === randomNumber) {
+                message.innerHTML = "🎉 Chính xác! Chuyển sang màn tiếp theo...";
+                message.style.color = "green";
+
+                setTimeout(nextLevel, 2000); // Chuyển sang cấp độ mới sau 2 giây
+            } else if (Math.abs(guess - randomNumber) <= 5) {
+                message.innerHTML = "🔥 Gần đúng! Bạn sắp đoán trúng rồi!";
+                message.style.color = "blue";
+            } else if (guess < randomNumber) {
+                message.innerHTML = "📉 Số bạn đoán quá thấp!";
+                message.style.color = "red";
+            } else {
+                message.innerHTML = "📈 Số bạn đoán quá cao!";
+                message.style.color = "red";
+            }
+        }
+
+        function nextLevel() {
+            currentLevel++;
+
+            if (currentLevel < levels.length) {
+                maxNumber = levels[currentLevel].max;
+                document.getElementById("level-title").innerHTML = `Màn ${currentLevel + 1} - ${levels[currentLevel].name}`;
+                document.getElementById("range-text").innerHTML = `Hãy đoán một số từ 1 đến ${maxNumber}:`;
+                document.getElementById("guess").max = maxNumber;
+                document.getElementById("message").innerHTML = "";
+                randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+            } else {
+                document.getElementById("message").innerHTML = "🏆 Bạn đã chiến thắng toàn bộ trò chơi! Đang chuyển trang...";
+                document.getElementById("message").style.color = "green";
+
+                setTimeout(() => {
+                    window.location.href = "https://thanhnha96.github.io/Sora/ghephinh";
+                }, 3000); // Chuyển trang sau 3 giây
+            }
+        }
+    </script>
+</body>
+</html>
